@@ -1,0 +1,35 @@
+version: "3"
+services:
+  application-example:
+    image: application-example:1.0
+    container_name: "application-example"
+    ports:
+      - 8085:8085
+    networks:
+      - elastic
+  elasticsearch-example:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    container_name: elasticsearch-example
+    environment:
+      - node.name=elasticsearch-example
+      - cluster.name=docker-cluster
+      - cluster.initial_master_nodes=elasticsearch-example
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - elastic
+volumes:
+  data01:
+    driver: local
+networks:
+  elastic:
+    driver: bridge
